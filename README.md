@@ -1,8 +1,8 @@
-# Secure AI Application
+# Agentic_AI_Chatbot_Security
 
 This project demonstrates two versions of an AI customer support application that uses MCP tools with a LangChain agent:
 
-- `unsecure-ai-agent`: an MCP server with no authentication or per-tool authorization.
+- `Ai_Agent_demo`: an MCP server with no authentication or per-tool authorization.
 - `secure-ai-agent`: an MCP server protected with Descope-issued JWTs and explicit scope checks on sensitive tools.
 
 The app is intentionally small and uses an in-memory mock support database so the difference between insecure and secure tool access is easy to see.
@@ -21,7 +21,7 @@ The secure version protects the MCP endpoint with Descope JWT authentication. To
 .
 ├── pyproject.toml
 ├── uv.lock
-├── unsecure-ai-agent/
+├── Ai_Agent_Demo/
 │   ├── api/index.py
 │   ├── customer_support_agent.py
 │   ├── mcp_server.py
@@ -37,7 +37,7 @@ The secure version protects the MCP endpoint with Descope JWT authentication. To
 
 ### MCP Servers
 
-`unsecure-ai-agent/mcp_server.py` creates a FastMCP server named `Support Tools Server` and exposes these tools:
+`Ai_Agent_demo/mcp_server.py` creates a FastMCP server named `Support Tools Server` and exposes these tools:
 
 - `answer_user_query`
 - `process_refund`
@@ -58,7 +58,7 @@ The secure version intentionally does not expose `list_customers`, which limits 
 
 ### Agent Clients
 
-`unsecure-ai-agent/customer_support_agent.py` connects to an MCP server using `MCP_SERVER_URL`, loads the available tools, and runs a LangChain/Groq support agent.
+`Ai_Agent_demo/customer_support_agent.py` connects to an MCP server using `MCP_SERVER_URL`, loads the available tools, and runs a LangChain/Groq support agent.
 
 `secure-ai-agent/customer_support_secure.py` gets or uses a Descope access token, connects to the secure MCP server with an `Authorization: Bearer <token>` header, loads the scoped tools, and runs a LangChain/Groq support agent.
 
@@ -138,7 +138,7 @@ DESCOPE_TOKEN_ENDPOINT=https://your-token-endpoint
 ### Run The Unsecure MCP Server
 
 ```bash
-uv run python unsecure-ai-agent/mcp_server.py
+uv run python Ai_Agent_demo/mcp_server.py
 ```
 
 The server exposes the MCP app at `/mcp`.
@@ -148,7 +148,7 @@ The server exposes the MCP app at `/mcp`.
 In another terminal, set `MCP_SERVER_URL` to the running MCP endpoint, then run:
 
 ```bash
-uv run python unsecure-ai-agent/customer_support_agent.py
+uv run python Ai_Agent_demo/customer_support_agent.py
 ```
 
 ### Run The Secure MCP Server
@@ -175,14 +175,14 @@ uv run python secure-ai-agent/customer_support_secure.py
 
 The Vercel entrypoint for each server is the `api/index.py` file in that server directory:
 
-- `unsecure-ai-agent/api/index.py` imports `app` from `mcp_server.py`.
+- `Ai_Agent_demo/api/index.py` imports `app` from `mcp_server.py`.
 - `secure-ai-agent/api/index.py` imports `app` from `secure_mcp_server.py`.
 
 Deploy the secure and unsecure servers as separate Vercel projects so each deployment has its own root directory and environment variables.
 
 Recommended setup:
 
-- Project 1 root directory: `unsecure-ai-agent`
+- Project 1 root directory: `Ai_Agent_demo`
 - Project 2 root directory: `secure-ai-agent`
 - Production endpoint path for both: `/mcp`
 
@@ -292,8 +292,8 @@ Set `GROQ_API_KEY` in the environment where the client script runs.
 
 ```bash
 uv sync
-uv run python unsecure-ai-agent/mcp_server.py
-uv run python unsecure-ai-agent/customer_support_agent.py
+uv run python Ai_Agent_demo/mcp_server.py
+uv run python Ai_Agent_demo/customer_support_agent.py
 uv run python secure-ai-agent/secure_mcp_server.py
 uv run python secure-ai-agent/customer_support_secure.py
 ```

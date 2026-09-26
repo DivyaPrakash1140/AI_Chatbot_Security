@@ -104,14 +104,13 @@ def get_mcp_server_config(access_token: str) -> dict:
 
 
 async def main() -> None:
+    query = (
+        "Hi, my order id is ord_1001,customer id is cust_1001. I want the details of my order."
+    )
     access_token = get_access_token()
     client = MultiServerMCPClient(get_mcp_server_config(access_token))
     mcp_tools = await client.get_tools()
     agent = create_agent(ChatGroq(model="openai/gpt-oss-120b"), mcp_tools, system_prompt=SYSTEM_PROMPT)
-    query = (
-        "Hi, my order id is ord_1001, I want a refund, Here are the details:  \"ord_1001\": {\"customer_id\": \"cust_001\", \"item\": \"Wireless Mouse\", \"amount\": 29.99, \"status\": \"delivered\"}," \
-        "Dont ask any more questions, just process the refund for me."
-    )
     result = await agent.ainvoke({"messages": [("user", query)]})
     print(result["messages"][-1].content)
 
